@@ -9,26 +9,29 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-function extract_uri(results) {
+async function extract_uri(results) {
   const uri = [];
-  results.forEach((res) => {
+  results.forEach(async (res) => {
     const id = res.url.split("/")[6];
-    uri.push({
-      name: res.name,
-      img_uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`,
-    });
+    const img_exists = await fetch(
+      `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-i/red-blue/transparent/${id}.png`
+    ).then((res) => res.ok);
+    if (img_exists) {
+      uri.push({
+        name: res.name,
+        img_uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-i/red-blue/transparent/${id}.png`,
+      });
+    }
   });
   return uri;
 }
 
 async function read_pokemon_api() {
-  const data = await fetch("https://pokeapi.co/api/v2/pokemon-form?limit=2000")
+  const results = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=2000")
     .then((res) => res.json())
-    .then((res_json) => {
-      const data = extract_uri(res_json.results);
-      return data;
-    })
+    .then((res_json) => res_json.results)
     .catch((err) => console.log(err.message));
+  const data = await extract_uri(results);
   return data;
 }
 

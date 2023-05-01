@@ -1,11 +1,19 @@
 import Image from "next/image";
 import getOptionsForVote from "../utils/getRandomPokemon";
-import pikachu from "../sample_images/pikachu.jpeg";
-import squirel from "../sample_images/squirel.jpeg";
-import getPokemon from "../utils/api";
+import { useState } from "react";
 
-function MainPage({ poke1, poke2 }) {
-  // console.log(poke_id1, poke_id2);
+function MainPage({ poke1, poke2, host }) {
+  const [pokemons, setPokemons] = useState([poke1, poke2]);
+  async function incrementVoteCount(pokemon) {
+    console.log(pokemon);
+    await fetch(`http://${host}/api/pokemon/${pokemon.id}`, {
+      method: "PUT",
+    }).catch((err) => {
+      console.error(err);
+    });
+    const { poke1, poke2 } = await generateNewPokemons(host);
+    setPokemons([poke1, poke2]);
+  }
 
   return (
     <div class="h-screen w-screen">
@@ -16,37 +24,47 @@ function MainPage({ poke1, poke2 }) {
       </div>
       <div class="flex-wrap items-center justify-center gap-8 text-center sm:flex">
         <div class="w-full px-4 py-4 mt-6 bg-white rounded-lg shadow-lg sm:w-1/2 md:w-1/2 lg:w-1/4 dark:bg-gray-800">
-          <div class="">
+          <div className="">
             <Image
-              src={poke1.img_uri}
-              width="100"
-              height="100"
+              src={pokemons[0].img_uri}
+              width={300}
+              height={300}
               className="rounded-md object-cover"
-              alt=""
+              alt={pokemons[0].img_uri}
             />
           </div>
-          <h3 class="py-4 text-2xl font-semibold text-gray-700 sm:text-xl dark:text-white">
-            {poke1.name}
-          </h3>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Rounder
-          </button>
+          <div>
+            <h3 class="py-4 text-2xl font-semibold text-gray-700 sm:text-xl dark:text-white">
+              {pokemons[0].name}
+            </h3>
+          </div>
+          <div>
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => incrementVoteCount(pokemons[0])}
+            >
+              Rounder
+            </button>
+          </div>
         </div>
         <h1 class="text-gray-800">vs.</h1>
         <div class="w-full px-4 py-4 mt-6 bg-white rounded-lg shadow-lg sm:w-1/2 md:w-1/2 lg:w-1/4 dark:bg-gray-800">
           <div class="">
             <Image
-              src={poke2.img_uri}
-              width="100"
-              height="100"
+              src={pokemons[1].img_uri}
+              width={300}
+              height={300}
               className="rounded-md object-cover"
-              alt=""
+              alt={pokemons[1].img_uri}
             />
           </div>
           <h3 class="py-4 text-2xl font-semibold text-gray-700 sm:text-xl dark:text-white">
-            {poke2.name}
+            {pokemons[1].name}
           </h3>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => incrementVoteCount(pokemons[1])}
+          >
             Rounder
           </button>
         </div>
@@ -55,27 +73,30 @@ function MainPage({ poke1, poke2 }) {
   );
 }
 
-// This gets called on every request
-export async function getServerSideProps() {
+async function generateNewPokemons(host) {
   const poke_ids = getOptionsForVote();
-  const poke1 = await fetch(
-    `http://localhost:3005/api/pokemon/${poke_ids[0]}`,
-    { method: "GET" }
-  )
+  const poke1 = await fetch(`http://${host}/api/pokemon/${poke_ids[0]}`, {
+    method: "GET",
+  })
     .then((res) => res.json())
     .catch((err) => {
       console.error(err);
     });
-  const poke2 = await fetch(
-    `http://localhost:3005/api/pokemon/${poke_ids[1]}`,
-    { method: "GET" }
-  )
+  const poke2 = await fetch(`http://${host}/api/pokemon/${poke_ids[1]}`, {
+    method: "GET",
+  })
     .then((res) => res.json())
     .catch((err) => {
       console.error(err);
     });
-  // Pass data to the page via props
-  return { props: { poke1, poke2 } };
+  return { poke1: poke1, poke2: poke2 };
+}
+
+// This gets called on every request
+export async function getServerSideProps({ req }) {
+  const host = req.headers.host;
+  const { poke1, poke2 } = await generateNewPokemons(host);
+  return { props: { poke1, poke2, host } };
 }
 
 export default MainPage;
