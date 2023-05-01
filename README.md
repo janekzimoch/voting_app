@@ -8,4 +8,7 @@ This is a toy project where i learn how to use several full-stack web tools:
 - [x] using prisma ORM for database interface
 - [x] deploying the web-app to online on vercel
 
-I could spend more time improving the styling of components but the overall functionality is there and the project is thus finished. Learnign objectives acomplished
+I could spend more time improving the styling of components but the overall functionality is there and the project is thus finished. Learning objectives acomplished
+
+See here:
+[https://janeks-voting-app.vercel.app/](https://janeks-voting-app.vercel.app/)
