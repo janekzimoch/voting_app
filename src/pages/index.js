@@ -3,7 +3,7 @@ import getOptionsForVote from "../utils/getRandomPokemon";
 import { useState } from "react";
 import getBaseUrl from "../utils/getBaseUrl";
 
-function MainPage({ poke1, poke2, host }) {
+function MainPage({ poke1, poke2 }) {
   const [pokemons, setPokemons] = useState([poke1, poke2]);
   async function incrementVoteCount(pokemon) {
     console.log(pokemon);
@@ -12,7 +12,7 @@ function MainPage({ poke1, poke2, host }) {
     }).catch((err) => {
       console.error(err);
     });
-    const { poke1, poke2 } = await generateNewPokemons(host);
+    const { poke1, poke2 } = await generateNewPokemons();
     setPokemons([poke1, poke2]);
   }
 
@@ -97,9 +97,8 @@ async function generateNewPokemons(host) {
 
 // This gets called on every request
 export async function getServerSideProps({ req }) {
-  const host = req.headers.host;
-  const { poke1, poke2 } = await generateNewPokemons(host);
-  return { props: { poke1, poke2, host } };
+  const { poke1, poke2 } = await generateNewPokemons();
+  return { props: { poke1, poke2 } };
 }
 
 export default MainPage;

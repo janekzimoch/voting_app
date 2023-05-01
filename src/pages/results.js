@@ -45,7 +45,6 @@ function ResultsPage({ sortedPokemons }) {
 
 // This gets called on every request
 export async function getServerSideProps({ req }) {
-  const host = req.headers.host;
   const allPokemons = await fetch(`${getBaseUrl()}/api/pokemon/`, {
     method: "GET",
   })
