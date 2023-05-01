@@ -95,6 +95,7 @@ async function generateNewPokemons(host) {
 // This gets called on every request
 export async function getServerSideProps({ req }) {
   const host = req.headers.host;
+  console.log(host);
   const { poke1, poke2 } = await generateNewPokemons(host);
   return { props: { poke1, poke2, host } };
 }
