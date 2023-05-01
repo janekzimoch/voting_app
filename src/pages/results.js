@@ -2,6 +2,7 @@ import Image from "next/image";
 import pikachu from "../sample_images/pikachu.jpeg";
 import squirel from "../sample_images/squirel.jpeg";
 import { useState } from "react";
+import getBaseUrl from "../utils/getBaseUrl";
 
 function ResultsPage({ sortedPokemons }) {
   let list_component = sortedPokemons.slice(0, 10).map((poke) => {
@@ -45,7 +46,7 @@ function ResultsPage({ sortedPokemons }) {
 // This gets called on every request
 export async function getServerSideProps({ req }) {
   const host = req.headers.host;
-  const allPokemons = await fetch(`http://${host}/api/pokemon/`, {
+  const allPokemons = await fetch(`${getBaseUrl()}/api/pokemon/`, {
     method: "GET",
   })
     .then((res) => res.json())

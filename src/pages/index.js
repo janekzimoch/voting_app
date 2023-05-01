@@ -1,12 +1,13 @@
 import Image from "next/image";
 import getOptionsForVote from "../utils/getRandomPokemon";
 import { useState } from "react";
+import getBaseUrl from "../utils/getBaseUrl";
 
 function MainPage({ poke1, poke2, host }) {
   const [pokemons, setPokemons] = useState([poke1, poke2]);
   async function incrementVoteCount(pokemon) {
     console.log(pokemon);
-    await fetch(`http://${host}/api/pokemon/${pokemon.id}`, {
+    await fetch(`${getBaseUrl()}/api/pokemon/${pokemon.id}`, {
       method: "PUT",
     }).catch((err) => {
       console.error(err);
@@ -75,14 +76,16 @@ function MainPage({ poke1, poke2, host }) {
 
 async function generateNewPokemons(host) {
   const poke_ids = getOptionsForVote();
-  const poke1 = await fetch(`http://${host}/api/pokemon/${poke_ids[0]}`, {
+  const path = getBaseUrl();
+  console.log(`${path}/api/pokemon/${poke_ids[0]}`);
+  const poke1 = await fetch(`${path}/api/pokemon/${poke_ids[0]}`, {
     method: "GET",
   })
     .then((res) => res.json())
     .catch((err) => {
       console.error(err);
     });
-  const poke2 = await fetch(`http://${host}/api/pokemon/${poke_ids[1]}`, {
+  const poke2 = await fetch(`${path}/api/pokemon/${poke_ids[1]}`, {
     method: "GET",
   })
     .then((res) => res.json())
@@ -95,7 +98,6 @@ async function generateNewPokemons(host) {
 // This gets called on every request
 export async function getServerSideProps({ req }) {
   const host = req.headers.host;
-  console.log(host);
   const { poke1, poke2 } = await generateNewPokemons(host);
   return { props: { poke1, poke2, host } };
 }
