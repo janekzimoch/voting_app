@@ -6,7 +6,7 @@ import { useState } from "react";
 function ResultsPage({ sortedPokemons }) {
   let list_component = sortedPokemons.slice(0, 10).map((poke) => {
     return (
-      <li class="flex flex-row mb-2 border-gray-400">
+      <li key={poke.id} class="flex flex-row mb-2 border-gray-400">
         <div class="shadow border select-none cursor-pointer bg-white dark:bg-gray-800 rounded-md flex flex-1 items-center p-4">
           <div class="flex flex-col items-center justify-center w-10 h-10 mr-4">
             <Image
